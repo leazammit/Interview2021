@@ -4,12 +4,64 @@
 // require('vendor/autoload.php');
 
 function load_json($path) {
-    return json_decode(file_get_contents(__DIR__ . '/' . $path), true);
+  return json_decode(file_get_contents(__DIR__ . '/' . $path), true);
 }
 
 $orders = load_json("./orders.json");
 
 // Start your implementation here
+
+//FREE ORDERS - COUNT
+function freePrice($in)
+{
+  return($in["price"] == "0");
+}
+$arrayPrices = count(array_filter($orders, "freePrice"));
+
+//ORDERS IN GBP - COUNT
+function orderGBP($in)
+{
+  return($in["currency"] == "GBP");
+}
+
+$ordersinGBP = count(array_filter($orders, "orderGBP"));
+
+//SHIPPING TO ESSEX - COUNT
+function shipEssex($in)
+{
+  return($in["customer"]["shipping_address"]["county"] == "Essex");
+}
+
+$shippingEssex = count(array_filter($orders, "shipEssex"));
+
+//GBP AND £100 OR MORE - SUM
+function gbp100($in)
+{
+  return($in["currency"] == "GBP" && $in["price"] >= "100");
+}
+
+$gbp100 = array_filter($orders, "gbp100");
+$gbp100 = round(array_sum(array_column($gbp100,"price")),2);
+
+//GBP - SUM
+function gbpOnly($in)
+{
+  return($in["currency"] == "GBP");
+}
+
+$gbpOnly = array_filter($orders, "gbpOnly");
+$gbpOnly = round(array_sum(array_column($gbpOnly,"price")),2);
+
+//GBP AND ESSEX - SUM
+function gbpEssex($in)
+{
+  return($in["currency"] == "GBP" && $in["customer"]["shipping_address"]["county"] == "Essex");
+}
+
+$gbpEssex = array_filter($orders, "gbpEssex");
+$gbpEssex = round(array_sum(array_column($gbpEssex,"price")),2);
+
+// var_dump($gbp100);
 
 ?>
 <!DOCTYPE html>
@@ -47,6 +99,7 @@ $orders = load_json("./orders.json");
     <div>
         <div>
             <h3 class="text-lg leading-6 font-medium text-gray-900">
+                TOTAL NUMBER OF ORDERS: <?php echo count($orders); ?><br/>
                 Count the number of orders that were...
             </h3>
             <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
@@ -57,7 +110,7 @@ $orders = load_json("./orders.json");
                     FREE
                   </dt>
                   <dd class="mt-1 text-3xl leading-9 font-semibold text-gray-900">
-                    ###
+                    <?php echo $arrayPrices; ?>
                   </dd>
                 </dl>
               </div>
@@ -69,7 +122,7 @@ $orders = load_json("./orders.json");
                     Placed in GBP
                   </dt>
                   <dd class="mt-1 text-3xl leading-9 font-semibold text-gray-900">
-                    ###
+                    <?php echo $ordersinGBP; ?>
                   </dd>
                 </dl>
               </div>
@@ -81,7 +134,7 @@ $orders = load_json("./orders.json");
                     Shipped to Essex
                   </dt>
                   <dd class="mt-1 text-3xl leading-9 font-semibold text-gray-900">
-                    ###
+                    <?php echo $shippingEssex; ?>
                   </dd>
                 </dl>
               </div>
@@ -100,7 +153,7 @@ $orders = load_json("./orders.json");
                     Placed in GBP and were £100 or more
                   </dt>
                   <dd class="mt-1 text-3xl leading-9 font-semibold text-gray-900">
-                    ###
+                    <?php echo $gbp100; ?>
                   </dd>
                 </dl>
               </div>
@@ -112,7 +165,7 @@ $orders = load_json("./orders.json");
                     Placed in GBP
                   </dt>
                   <dd class="mt-1 text-3xl leading-9 font-semibold text-gray-900">
-                    ###
+                    <?php echo $gbpOnly; ?>
                   </dd>
                 </dl>
               </div>
@@ -124,7 +177,7 @@ $orders = load_json("./orders.json");
                     Placed in GBP and were shipped to Essex
                   </dt>
                   <dd class="mt-1 text-3xl leading-9 font-semibold text-gray-900">
-                    ###
+                    <?php echo $gbpEssex; ?>
                   </dd>
                 </dl>
               </div>
